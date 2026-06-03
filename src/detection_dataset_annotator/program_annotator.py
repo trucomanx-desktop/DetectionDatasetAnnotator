@@ -69,7 +69,8 @@ DEFAULT_CONTENT={   "toolbar_configure": "Configure",
                     "name_git": "Git",
                     "changes_pushed": "Changes pushed!",
                     "no_save_config": "Could not save config.json:",
-                    "boundingbox_fontsize":18
+                    "boundingbox_fontsize":18,
+                    "boundingbox_linewidth":5
                 }
 
 configure.verify_default_config(CONFIG_PATH,default_content=DEFAULT_CONTENT)
@@ -82,7 +83,7 @@ CONFIG=configure.load_config(CONFIG_PATH)
 class BoundingBox(QGraphicsRectItem):
     HANDLE_SIZE = 6
 
-    def __init__(self, rect, class_name, color, parent=None):
+    def __init__(self, rect, class_name, color, linewidth=2, fontsize=18, parent=None):
         super().__init__(rect)
         self.setFlags(
             QGraphicsItem.ItemIsSelectable |
@@ -95,12 +96,14 @@ class BoundingBox(QGraphicsRectItem):
 
         self.class_name = class_name
         self.color = color
+        self.linewidth = linewidth
+        self.fontsize = fontsize
         
         self.text_item = QGraphicsSimpleTextItem(class_name, self)
         self.text_item.setBrush(QBrush(Qt.black))  # texto preto
 
         font = QFont()
-        font.setPointSize(CONFIG["boundingbox_fontsize"]) 
+        font.setPointSize(self.fontsize) 
         font.setBold(True)
 
         self.text_item.setFont(font)
@@ -113,7 +116,7 @@ class BoundingBox(QGraphicsRectItem):
 
         self.update_label_position()
 
-        self.setPen(QPen(color, 2))
+        self.setPen(QPen(color, self.linewidth))
         self.setBrush(QBrush(QColor(0,0,0,0)))
 
     def update_label_position(self):
@@ -225,7 +228,11 @@ class AnnotateScene(QGraphicsScene):
             if rect.width() > 5 and rect.height() > 5:
                 color = QColor(self.adding_color)
                 
-                box = BoundingBox(rect, self.adding_class, color)
+                box = BoundingBox(  rect, 
+                                    self.adding_class, 
+                                    color, 
+                                    CONFIG["boundingbox_linewidth"], 
+                                    CONFIG["boundingbox_fontsize"] )
                 self.addItem(box)
                 self.box_items.append(box)
             self.removeItem(self.temp_rect_item)
@@ -779,7 +786,11 @@ class AnnotateYoloApp(QMainWindow):
                     y = (cy-bh/2)*h
                     rect = QRectF(x,y,bw*w,bh*h)
                     color = QColor(self.classes_colors[cls_id])
-                    box = BoundingBox(rect,self.classes[cls_id],color)
+                    box = BoundingBox(  rect,
+                                        self.classes[cls_id], 
+                                        color, 
+                                        CONFIG["boundingbox_linewidth"], 
+                                        CONFIG["boundingbox_fontsize"] )
                     self.scene.addItem(box)
                     self.scene.box_items.append(box)
 

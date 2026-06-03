@@ -22,6 +22,15 @@ To start the project generator, use the command below:
 ```bash
 detection-dataset-project
 ```
+And select an image `base` directory with a subdirectory 'images' (mandatory) 
+```  
+base/
+    images/  
+        image1.png  
+        image2.png 
+        ... 
+```
+
 
 To start the annotator, use the command below:
 

@@ -31,7 +31,6 @@ base/
         ... 
 ```
 
-
 To start the annotator, use the command below:
 
 ```bash

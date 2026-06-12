@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "detection_dataset_annotator"
-version = "0.1.14"
+version = "0.1.15"
 description = "A slight annotator of detection datasets"
 readme = "README.md"
 authors = [{name = "Fernando Pujaico Rivera", email = "fernando.pujaico.rivera@gmail.com"}]

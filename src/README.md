@@ -39,6 +39,12 @@ detection-dataset-annotator
 
 ## 2. More information
 
+You can also use:
+
+```bash
+detection-dataset-labeler
+```
+
 If you want more information go to [doc](https://github.com/trucomanx-desktop/DetectionDatasetAnnotator/blob/main/doc) directory.
 
 ## 3. Buy me a coffee

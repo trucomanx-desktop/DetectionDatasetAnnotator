@@ -12,6 +12,7 @@ from detection_dataset_annotator.about import (
     __package__,
     __program_name__,
     __program_project__,
+    __program_labeler__,
     __author__,
     __email__,
     __description__,
@@ -61,12 +62,13 @@ dependencies = [
 [project.scripts]
 "{__program_name__}" = "{__package__}.program_annotator:main"
 "{__program_project__}" = "{__package__}.program_project:main"
+"{__program_labeler__}" = "{__package__}.program_labeler:main"
 
 [tool.setuptools]
 packages = ["{__package__}", "{__package__}.modules"]
 
 [tool.setuptools.package-data]
-"{__package__}" = ["icons/*.png"]
+"{__package__}" = ["icons/*.png", "icons/*.svg"]
 """
 
 # Escreve o pyproject.toml

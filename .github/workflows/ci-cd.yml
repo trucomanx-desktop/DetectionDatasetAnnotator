@@ -76,7 +76,7 @@ jobs:
             --name detection-dataset-project \
             --add-data "detection_dataset_annotator/icons:icons" \
             --collect-all PyQt5 \
-            program_launcher_project.py \
+            program_launcher_project.py
           python -m PyInstaller --onefile --windowed \
             --name detection-dataset-labeler \
             --add-data "detection_dataset_annotator/icons:icons" \
@@ -97,7 +97,7 @@ jobs:
             --name detection-dataset-project `
             --add-data "detection_dataset_annotator/icons;icons" `
             --collect-all PyQt5 `
-            program_launcher_project.py `
+            program_launcher_project.py
           python -m PyInstaller --onefile --windowed `
             --name detection-dataset-labeler `
             --add-data "detection_dataset_annotator/icons;icons" `

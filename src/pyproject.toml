@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "detection_dataset_annotator"
-version = "0.1.12"
+version = "0.1.13"
 description = "A slight annotator of detection datasets"
 readme = "README.md"
 authors = [{name = "Fernando Pujaico Rivera", email = "fernando.pujaico.rivera@gmail.com"}]
@@ -20,7 +20,8 @@ keywords = ["dataset", "annotator", "yolo"]
 dependencies = [
     "PyQt5",
     "GitPython",
-    "natsort"
+    "natsort",
+    "Pillow"
 ]
 
 [project.urls]

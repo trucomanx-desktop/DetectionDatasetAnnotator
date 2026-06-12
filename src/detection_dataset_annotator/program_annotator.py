@@ -8,6 +8,8 @@ import signal
 import copy
 import tempfile
 
+from PIL import Image
+
 from PyQt5 import QtWidgets, QtCore, QtGui
 from git import Repo, GitCommandError
 #from natsort import natsorted
@@ -27,13 +29,16 @@ from detection_dataset_annotator.desktop import create_desktop_directory
 from detection_dataset_annotator.desktop import create_desktop_menu
 from detection_dataset_annotator.modules.wabout  import show_about_window
 from detection_dataset_annotator.modules.resources import resource_path
+from detection_dataset_annotator.modules.exif_audit import ExifAuditWindow
 
 CONFIG_PATH = os.path.join( os.path.expanduser("~"),
                             ".config",
                             about.__package__,
                             about.__program_name__+".json")
 
-DEFAULT_CONTENT={   "toolbar_configure": "Configure",
+DEFAULT_CONTENT={   "toolbar_exif": "EXIF",
+                    "toolbar_exif_tooltip": "Audit and fix image EXIF orientation",
+                    "toolbar_configure": "Configure",
                     "toolbar_configure_tooltip": "Open the configure Json file",
                     "toolbar_about": "About",
                     "toolbar_about_tooltip": "About the program",
@@ -269,6 +274,15 @@ class AnnotateYoloApp(QMainWindow):
         self.toolbar = self.addToolBar("Main Toolbar")
         self.toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         
+        #
+        self.exif_action = QAction( QIcon(resource_path('icons', 'image.png')),
+                                    CONFIG["toolbar_exif"],
+                                    self )
+        self.exif_action.setToolTip(CONFIG["toolbar_exif_tooltip"])
+        self.exif_action.triggered.connect(self.open_exif_window)
+        self.exif_action.setEnabled(False)
+        self.toolbar.addAction(self.exif_action)
+        
         # Adicionar o espaçador
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -297,6 +311,23 @@ class AnnotateYoloApp(QMainWindow):
         self.coffee_action.setToolTip(CONFIG["toolbar_coffee_tooltip"])
         self.coffee_action.triggered.connect(self.on_coffee_action_click)
         self.toolbar.addAction(self.coffee_action)
+    
+    def open_exif_window(self):
+
+        if not self.dataset_path:
+            QMessageBox.warning(
+                self,
+                CONFIG["error"],
+                CONFIG["select_dataset_folder"]
+            )
+            return
+
+        dialog = ExifAuditWindow(
+            dataset_path=self.dataset_path,
+            parent=self
+        )
+
+        dialog.exec_()
     
     def open_configure_editor(self):
         if os.name == 'nt':  # Windows
@@ -409,6 +440,13 @@ class AnnotateYoloApp(QMainWindow):
         self.lbl_current_image.setAlignment(Qt.AlignCenter)
         self.lbl_current_image.setTextInteractionFlags(Qt.TextSelectableByMouse | Qt.TextSelectableByKeyboard)
         right_panel_layout.addWidget(self.lbl_current_image)
+        
+        self.lbl_exif_warning = QLabel("")
+        self.lbl_exif_warning.setAlignment(Qt.AlignCenter)
+        font = self.lbl_exif_warning.font()
+        font.setBold(True)
+        self.lbl_exif_warning.setFont(font)
+        right_panel_layout.addWidget(self.lbl_exif_warning)
 
         self.scene = AnnotateScene()
         self.view = QGraphicsView(self.scene)
@@ -456,6 +494,29 @@ class AnnotateYoloApp(QMainWindow):
     # -------------------------------
     # Dataset / User
     # -------------------------------
+    def update_exif_warning(self, img_path):
+
+        try:
+
+            img = Image.open(img_path)
+            orientation = img.getexif().get(274, 1)
+
+            if orientation != 1:
+                self.lbl_exif_warning.setText(
+                    f"⚠ WARNING: EXIF Orientation={orientation}. "
+                    "Normalize this image before annotation."
+                )
+
+                self.lbl_exif_warning.setStyleSheet("color: red;")
+            else:
+                self.lbl_exif_warning.setText("")
+                self.lbl_exif_warning.setStyleSheet("")
+
+        except Exception:
+
+            self.lbl_exif_warning.setText("")
+            self.lbl_exif_warning.setStyleSheet("")
+    
     def select_dataset(self):
         folder = QFileDialog.getExistingDirectory(self,CONFIG["select_dataset_folder"])
         if folder:
@@ -483,8 +544,10 @@ class AnnotateYoloApp(QMainWindow):
             self.btn_update_dataset.show()
             self.btn_commit.show()
             self.btn_approve.show()
+            
+            self.exif_action.setEnabled(True)
 
-
+        
     def update_dataset(self):
         self.setEnabled(False)
         self.init_git()
@@ -766,6 +829,9 @@ class AnnotateYoloApp(QMainWindow):
         self.scene.clear()
         self.scene.box_items = []
         img_path = os.path.join(self.dataset_path,"images",img_name)
+        
+        self.update_exif_warning(img_path)
+        
         pixmap = QPixmap(img_path)
         self.pixmap_item = self.scene.addPixmap(pixmap)
         self.view.fitInView(self.pixmap_item,Qt.KeepAspectRatio)

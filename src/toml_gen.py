@@ -48,7 +48,8 @@ keywords = ["dataset", "annotator", "yolo"]
 dependencies = [
     "PyQt5",
     "GitPython",
-    "natsort"
+    "natsort",
+    "Pillow"
 ]
 
 [project.urls]

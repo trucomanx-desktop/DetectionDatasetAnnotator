@@ -405,6 +405,7 @@ class AnnotateYoloApp(QMainWindow):
         self.table_todo.setHorizontalHeaderLabels(["Image"])
         self.table_todo.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table_todo.itemSelectionChanged.connect(self.display_selected_image)
+        self.table_todo.setSortingEnabled(True)
         left_panel_layout.addWidget(self.table_todo)
 
         left_panel_layout.addWidget(QLabel(CONFIG["annotated"]))
@@ -417,6 +418,7 @@ class AnnotateYoloApp(QMainWindow):
         self.table_done.setHorizontalHeaderLabels(["Image"])
         self.table_done.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table_done.itemSelectionChanged.connect(self.display_selected_image)
+        self.table_done.setSortingEnabled(True)
         left_panel_layout.addWidget(self.table_done)
 
         self.btn_commit = QPushButton(CONFIG["commit_and_push"])
